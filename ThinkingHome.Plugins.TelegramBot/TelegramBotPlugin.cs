@@ -82,7 +82,7 @@ namespace ThinkingHome.Plugins.TelegramBot {
                         _ = SafeInvokeAsync(handlers[TelegramMessageHandlerAttribute.ALL_COMMANDS], fn => fn(command, msg));
                     }
                     else {
-                        Logger.LogInformation($"Received message from unknown user with username {msg.Chat.Username}");
+                        Logger.LogInformation("Received message from unknown user with username {0}", msg.Chat.Username);
                     }
                 }
             }
