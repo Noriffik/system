@@ -11,18 +11,18 @@ using Telegram.Bot.Types.Enums;
 using ThinkingHome.Core.Plugins;
 using ThinkingHome.Core.Plugins.Utils;
 
-namespace ThinkingHome.Plugins.TelegramBot
-{
-    public class TelegramBotPlugin : PluginBase, IUpdateHandler
-    {
+namespace ThinkingHome.Plugins.TelegramBot {
+    public class TelegramBotPlugin : PluginBase, IUpdateHandler {
+        private string[] logins = ["pissfggt", "dima117a"];
+
         private static readonly Regex CommandRegex = new Regex("^\\s*/([a-z0-9-_]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         private ObjectSetRegistry<TelegramMessageHandlerDelegate> handlers;
 
         private TelegramBotClient bot;
-        
+
         private readonly CancellationTokenSource cts = new();
-        
+
         private readonly ReceiverOptions receiverOptions = new() {
             AllowedUpdates = [UpdateType.Message]
         };
@@ -48,8 +48,7 @@ namespace ThinkingHome.Plugins.TelegramBot
             bot.StartReceiving(this, receiverOptions, cts.Token);
 
             // receive bot info
-            bot.GetMe().ContinueWith(me =>
-            {
+            bot.GetMe().ContinueWith(me => {
                 if (me.Exception != null) return;
 
                 Logger.LogInformation(
@@ -68,16 +67,18 @@ namespace ThinkingHome.Plugins.TelegramBot
         public Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             if (update.Message is { } msg) {
-                var command = ParseCommand(msg.Text);
+                
+                if (msg.Chat.Type == ChatType.Private) {
+                    var command = ParseCommand(msg.Text);
 
-                Logger.LogInformation(
-                    "New telegram message: messageID: {MessageId}; chatID: {ChatId} ({Username})",
-                    msg.MessageId, msg.Chat.Id, msg.Chat.Username);
+                    Logger.LogInformation(
+                        "New telegram message: messageID: {MessageId}; chatID: {ChatId} ({Username})",
+                        msg.MessageId, msg.Chat.Id, msg.Chat.Username);
 
-                _ = SafeInvokeAsync(handlers[command], fn => fn(command, msg));
+                    _ = SafeInvokeAsync(handlers[command], fn => fn(command, msg));
 
-                _ = SafeInvokeAsync(handlers[TelegramMessageHandlerAttribute.ALL_COMMANDS], fn => fn(command, msg));
-          
+                    _ = SafeInvokeAsync(handlers[TelegramMessageHandlerAttribute.ALL_COMMANDS], fn => fn(command, msg));
+                }
             }
 
             return Task.CompletedTask;
