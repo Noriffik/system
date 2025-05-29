@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -67,17 +68,22 @@ namespace ThinkingHome.Plugins.TelegramBot {
         public Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             if (update.Message is { } msg) {
-                
+
                 if (msg.Chat.Type == ChatType.Private) {
-                    var command = ParseCommand(msg.Text);
+                    if (logins.Contains(msg.Chat.Username)) {
+                        var command = ParseCommand(msg.Text);
 
-                    Logger.LogInformation(
-                        "New telegram message: messageID: {MessageId}; chatID: {ChatId} ({Username})",
-                        msg.MessageId, msg.Chat.Id, msg.Chat.Username);
+                        Logger.LogInformation(
+                            "New telegram message: messageID: {MessageId}; chatID: {ChatId} ({Username})",
+                            msg.MessageId, msg.Chat.Id, msg.Chat.Username);
 
-                    _ = SafeInvokeAsync(handlers[command], fn => fn(command, msg));
+                        _ = SafeInvokeAsync(handlers[command], fn => fn(command, msg));
 
-                    _ = SafeInvokeAsync(handlers[TelegramMessageHandlerAttribute.ALL_COMMANDS], fn => fn(command, msg));
+                        _ = SafeInvokeAsync(handlers[TelegramMessageHandlerAttribute.ALL_COMMANDS], fn => fn(command, msg));
+                    }
+                    else {
+                        Logger.LogInformation($"Received message from unknown user with username {msg.Chat.Username}");
+                    }
                 }
             }
 
