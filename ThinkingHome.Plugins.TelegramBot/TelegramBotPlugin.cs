@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
@@ -15,9 +16,9 @@ using ThinkingHome.Core.Plugins.Utils;
 
 namespace ThinkingHome.Plugins.TelegramBot {
     public class TelegramBotPlugin : PluginBase, IUpdateHandler {
-        
-        private HashSet<string> logins = new HashSet<string>(["PISSFGGT", "dima117a"], StringComparer.OrdinalIgnoreCase);
 
+        private HashSet<string> logins;
+        
         private static readonly Regex CommandRegex = new Regex("^\\s*/([a-z0-9-_]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         private ObjectSetRegistry<TelegramMessageHandlerDelegate> handlers;
@@ -34,7 +35,9 @@ namespace ThinkingHome.Plugins.TelegramBot {
         {
             // init bot client
             var token = Configuration["token"];
-
+            var confLoginData = Configuration.GetSection("authorizedLogins").Get<string[]>();
+            logins = new HashSet<string>(confLoginData, StringComparer.OrdinalIgnoreCase);
+            Logger.LogInformation("Avaliable logins are: {0}", string.Join(",", confLoginData));
             bot = new TelegramBotClient(token);
 
             // register handlers
