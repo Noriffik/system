@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -14,7 +15,8 @@ using ThinkingHome.Core.Plugins.Utils;
 
 namespace ThinkingHome.Plugins.TelegramBot {
     public class TelegramBotPlugin : PluginBase, IUpdateHandler {
-        private string[] logins = ["pissfggt", "dima117a"];
+        
+        private HashSet<string> logins = new HashSet<string>(["PISSFGGT", "dima117a"], StringComparer.OrdinalIgnoreCase);
 
         private static readonly Regex CommandRegex = new Regex("^\\s*/([a-z0-9-_]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
