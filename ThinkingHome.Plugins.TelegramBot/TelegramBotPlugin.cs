@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
@@ -11,18 +14,19 @@ using Telegram.Bot.Types.Enums;
 using ThinkingHome.Core.Plugins;
 using ThinkingHome.Core.Plugins.Utils;
 
-namespace ThinkingHome.Plugins.TelegramBot
-{
-    public class TelegramBotPlugin : PluginBase, IUpdateHandler
-    {
-        private static readonly Regex CommandRegex = new Regex("^\\s*/([a-zа-яё0-9-_]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+namespace ThinkingHome.Plugins.TelegramBot {
+    public class TelegramBotPlugin : PluginBase, IUpdateHandler {
+
+        private HashSet<string> logins;
+        
+        private static readonly Regex CommandRegex = new Regex("^\\s*/([a-z0-9-_]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         private ObjectSetRegistry<TelegramMessageHandlerDelegate> handlers;
 
         private TelegramBotClient bot;
-        
+
         private readonly CancellationTokenSource cts = new();
-        
+
         private readonly ReceiverOptions receiverOptions = new() {
             AllowedUpdates = [UpdateType.Message]
         };
@@ -31,7 +35,9 @@ namespace ThinkingHome.Plugins.TelegramBot
         {
             // init bot client
             var token = Configuration["token"];
-
+            var confLoginData = Configuration.GetSection("authorizedLogins").Get<string[]>();
+            logins = new HashSet<string>(confLoginData, StringComparer.OrdinalIgnoreCase);
+            Logger.LogInformation("Avaliable logins are: {0}", string.Join(",", confLoginData));
             bot = new TelegramBotClient(token);
 
             // register handlers
@@ -48,8 +54,7 @@ namespace ThinkingHome.Plugins.TelegramBot
             bot.StartReceiving(this, receiverOptions, cts.Token);
 
             // receive bot info
-            bot.GetMe().ContinueWith(me =>
-            {
+            bot.GetMe().ContinueWith(me => {
                 if (me.Exception != null) return;
 
                 Logger.LogInformation(
@@ -68,16 +73,23 @@ namespace ThinkingHome.Plugins.TelegramBot
         public Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             if (update.Message is { } msg) {
-                var command = ParseCommand(msg.Text);
 
-                Logger.LogInformation(
-                    "New telegram message: messageID: {MessageId}; chatID: {ChatId} ({Username})",
-                    msg.MessageId, msg.Chat.Id, msg.Chat.Username);
+                if (msg.Chat.Type == ChatType.Private) {
+                    if (logins.Contains(msg.Chat.Username)) {
+                        var command = ParseCommand(msg.Text);
 
-                _ = SafeInvokeAsync(handlers[command], fn => fn(command, msg));
+                        Logger.LogInformation(
+                            "New telegram message: messageID: {MessageId}; chatID: {ChatId} ({Username})",
+                            msg.MessageId, msg.Chat.Id, msg.Chat.Username);
 
-                _ = SafeInvokeAsync(handlers[TelegramMessageHandlerAttribute.ALL_COMMANDS], fn => fn(command, msg));
-          
+                        _ = SafeInvokeAsync(handlers[command], fn => fn(command, msg));
+
+                        _ = SafeInvokeAsync(handlers[TelegramMessageHandlerAttribute.ALL_COMMANDS], fn => fn(command, msg));
+                    }
+                    else {
+                        Logger.LogInformation("Received message from unknown user with username {0}", msg.Chat.Username);
+                    }
+                }
             }
 
             return Task.CompletedTask;
