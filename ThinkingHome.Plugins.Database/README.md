@@ -30,7 +30,7 @@
 
 Вы можете отметить методы своего плагина атрибутом `ThinkingHome.Plugins.Database.DbModelBuilderAttribute` и реализовать там логику по настройке мэппинга вашей модели на структуру БД, используя EF Fluent API.
 
-Сигнатура метода, вызываемого по таймеру, должна соответствовать делегату `DbModelBuilderDelegate`:
+Сигнатура метода, который настраивает модель, должна соответствовать делегату `DbModelBuilderDelegate`:
 
 ```csharp
 public delegate void DbModelBuilderDelegate(ModelBuilder modelBuilder);
