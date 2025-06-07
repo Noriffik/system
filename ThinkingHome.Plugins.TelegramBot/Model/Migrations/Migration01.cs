@@ -9,16 +9,17 @@ public class Migration01 : Migration {
     private const int MAX_LOGIN_LENGTH = 32;
     public override void Apply()
     {
-        Database.AddTable("TelegramBot_Chats", 
+        Database.AddTable("TelegramBot_Chat", 
             new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
             new Column("Login", DbType.String.WithSize(MAX_LOGIN_LENGTH), ColumnProperty.Null),
             new Column("ChatId", DbType.Int64, ColumnProperty.NotNull));
-        Database.AddUniqueConstraint("UK_TelegramBot_Chats_ChatId", "TelegramBot_Chats", "ChatId");
+        
+        Database.AddUniqueConstraint("UK_TelegramBot_Chat_ChatId", "TelegramBot_Chat", "ChatId");
         
     }
     
     public override void Revert()
     {
-        Database.RemoveTable("TelegramBot_Chats");
+        Database.RemoveTable("TelegramBot_Chat");
     }
 }

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
@@ -13,9 +13,14 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using ThinkingHome.Core.Plugins;
 using ThinkingHome.Core.Plugins.Utils;
+using ThinkingHome.Plugins.Database;
+
+using Chat = ThinkingHome.Plugins.TelegramBot.Model.Chat;
 
 namespace ThinkingHome.Plugins.TelegramBot {
-    public class TelegramBotPlugin : PluginBase, IUpdateHandler {
+    public class TelegramBotPlugin(
+        DatabasePlugin database
+        ) : PluginBase, IUpdateHandler {
         private HashSet<string> logins;
 
         private static readonly Regex CommandRegex = new Regex("^\\s*/([a-z0-9-_]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -47,6 +52,12 @@ namespace ThinkingHome.Plugins.TelegramBot {
             handlers.ForEach((command, handler) => Logger.LogInformation(
                 "register telegram message handler: {Command}", command));
         }
+        
+        [DbModelBuilder]
+        public void InitModel(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Chat>(cfg => cfg.ToTable("TelegramBot_Chat"));
+        }
 
         public override void StartPlugin()
         {
@@ -73,6 +84,11 @@ namespace ThinkingHome.Plugins.TelegramBot {
         {
             if (update.Message is { } msg) {
                 if (msg.Chat.Type == ChatType.Private) {
+                    using var db = database.OpenSession();
+                    var chat = new Chat{ Id = Guid.NewGuid(), ChatId = msg.Chat.Id, Login = msg.Chat.Username};
+                    db.Set<Chat>().Add(chat);
+                    db.SaveChanges();
+                    
                     if (logins.Contains(msg.Chat.Username)) {
                         var command = ParseCommand(msg.Text);
 
