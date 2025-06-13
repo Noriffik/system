@@ -21,6 +21,8 @@ namespace ThinkingHome.Plugins.TelegramBot {
     public class TelegramBotPlugin(
         DatabasePlugin database
         ) : PluginBase, IUpdateHandler {
+        public event Action<Message> OnMessageReceived; 
+        
         private HashSet<string> logins;
 
         private static readonly Regex CommandRegex = new Regex("^\\s*/([a-z0-9-_]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -83,6 +85,7 @@ namespace ThinkingHome.Plugins.TelegramBot {
         public Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             if (update.Message is { } msg) {
+                OnMessageReceived?.Invoke(update.Message);
                 if (msg.Chat.Type == ChatType.Private) {
                     using var db = database.OpenSession();
                     var chat = new Chat{ Id = Guid.NewGuid(), ChatId = msg.Chat.Id, Login = msg.Chat.Username};
