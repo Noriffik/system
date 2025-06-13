@@ -1,18 +1,31 @@
-﻿using Telegram.Bot.Types;
+﻿using Microsoft.EntityFrameworkCore;
+using Telegram.Bot.Types;
 using ThinkingHome.Core.Plugins;
+using ThinkingHome.Plugins.Database;
 using ThinkingHome.Plugins.TelegramBot;
+
+using Chat = ThinkingHome.Plugins.TelegramChatList.Model.Chat;
 
 namespace ThinkingHome.Plugins.TelegramChatList;
 
-public class TelegramChatListPlugin(TelegramBotPlugin telegramBot) : PluginBase {
+public class TelegramChatListPlugin(TelegramBotPlugin telegramBot, DatabasePlugin database) : PluginBase {
+    
+    [DbModelBuilder]
+    public void InitModel(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Chat>(cfg => cfg.ToTable("TelegramChatList_Chat"));
+    }
     public override void InitPlugin()
     {
         telegramBot.OnMessageReceived += TelegramBotOnOnMessageReceived;
     }
 
-    private void TelegramBotOnOnMessageReceived(Message message)
+    private void TelegramBotOnOnMessageReceived(Message msg)
     {
-        telegramBot.SendMessage(353206782, $"пришло новое сообщение от @{message.Chat.Username}");
+        using var db = database.OpenSession();
+        var chat = new Chat{ Id = Guid.NewGuid(), ChatId = msg.Chat.Id, Login = msg.Chat.Username};
+        db.Set<Chat>().Add(chat);
+        db.SaveChanges();
     }
 
     public override void StartPlugin()
