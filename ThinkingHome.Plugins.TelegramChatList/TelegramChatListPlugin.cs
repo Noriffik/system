@@ -23,8 +23,19 @@ public class TelegramChatListPlugin(TelegramBotPlugin telegramBot, DatabasePlugi
     private void TelegramBotOnOnMessageReceived(Message msg)
     {
         using var db = database.OpenSession();
-        var chat = new Chat{ Id = Guid.NewGuid(), ChatId = msg.Chat.Id, Login = msg.Chat.Username};
-        db.Set<Chat>().Add(chat);
+
+        var savedChat = db.Set<Chat>().SingleOrDefault(c => c.ChatId == msg.Chat.Id);
+        
+        if (savedChat == null) {
+            savedChat = new Chat 
+                { Id = Guid.NewGuid(), ChatId = msg.Chat.Id, Login = msg.Chat.Username };
+            
+            db.Set<Chat>().Add(savedChat);
+        }
+        else {
+            savedChat.Login = msg.Chat.Username;
+        }
+
         db.SaveChanges();
     }
 

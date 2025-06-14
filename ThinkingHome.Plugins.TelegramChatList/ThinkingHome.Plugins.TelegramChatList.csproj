@@ -8,7 +8,12 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ThinkingHome.Core.Plugins\ThinkingHome.Core.Plugins.csproj" />
+      <ProjectReference Include="..\ThinkingHome.Plugins.Database\ThinkingHome.Plugins.Database.csproj" />
       <ProjectReference Include="..\ThinkingHome.Plugins.TelegramBot\ThinkingHome.Plugins.TelegramBot.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="ThinkingHome.Migrator.Framework" Version="3.9.0" />
     </ItemGroup>
 
 </Project>
