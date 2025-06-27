@@ -12,7 +12,10 @@ public class Migration01 : Migration {
         Database.AddTable("TelegramChatList_Chat", 
             new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
             new Column("Login", DbType.String.WithSize(MAX_LOGIN_LENGTH), ColumnProperty.Null),
-            new Column("ChatId", DbType.Int64, ColumnProperty.NotNull));
+            new Column("ChatId", DbType.Int64, ColumnProperty.NotNull),
+            new Column("Date", DbType.DateTime, ColumnProperty.NotNull),
+            new Column("FirstName", DbType.String.WithSize(int.MaxValue), ColumnProperty.Null),
+            new Column("LastName", DbType.String.WithSize(int.MaxValue), ColumnProperty.Null));
         
         Database.AddUniqueConstraint("UK_TelegramChatList_Chat_ChatId", "TelegramChatList_Chat", "ChatId");
         
