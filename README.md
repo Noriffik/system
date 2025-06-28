@@ -15,6 +15,7 @@ ThinkingHome - кроссплатформенное приложение, поз
 - [ThinkingHome.Plugins.Scripts](./ThinkingHome.Plugins.Scripts) - выполнение сценариев автоматизации
 - [ThinkingHome.Plugins.Scripts.WebApi](./ThinkingHome.Plugins.Scripts.WebApi) - web API для управления сценариями
 - [ThinkingHome.Plugins.TelegramBot](./ThinkingHome.Plugins.TelegramBot) - Telegram бот
+- [ThinkingHome.Plugins.TelegramChatList](./ThinkingHome.Plugins.TelegramChatList) - сохранение информации о чатах с Telegram ботом
 - [ThinkingHome.Plugins.Timer](./ThinkingHome.Plugins.Timer) - выполнение действий по таймеру
 - [ThinkingHome.Plugins.WebServer](./ThinkingHome.Plugins.WebServer) - инфраструктура для обращения к методам плагинов по HTTP
 - [ThinkingHome.Plugins.WebServer.UrlValidation](./ThinkingHome.Plugins.WebServer.UrlValidation) - валидация URL методов плагинов на соответствие правилам
