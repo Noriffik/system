@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+    <Import Project="../Package.xml" />
     <PropertyGroup>
+        <Description>ThinkingHome plugin which store TelegramBot chats data.</Description>
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-
+    
     <ItemGroup>
       <ProjectReference Include="..\ThinkingHome.Core.Plugins\ThinkingHome.Core.Plugins.csproj" />
       <ProjectReference Include="..\ThinkingHome.Plugins.Database\ThinkingHome.Plugins.Database.csproj" />
