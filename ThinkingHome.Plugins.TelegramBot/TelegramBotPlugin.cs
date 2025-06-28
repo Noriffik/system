@@ -15,8 +15,8 @@ using ThinkingHome.Core.Plugins.Utils;
 
 namespace ThinkingHome.Plugins.TelegramBot {
     public class TelegramBotPlugin : PluginBase, IUpdateHandler {
-        public event Action<Message> OnMessageReceived; 
-        
+        public event Action<Message> OnMessageReceived;
+
         private HashSet<string> logins;
 
         private static readonly Regex CommandRegex = new Regex("^\\s*/([a-z0-9-_]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -48,7 +48,7 @@ namespace ThinkingHome.Plugins.TelegramBot {
             handlers.ForEach((command, handler) => Logger.LogInformation(
                 "register telegram message handler: {Command}", command));
         }
-        
+
         public override void StartPlugin()
         {
             bot.StartReceiving(this, receiverOptions, cts.Token);
@@ -75,8 +75,6 @@ namespace ThinkingHome.Plugins.TelegramBot {
             if (update.Message is { } msg) {
                 OnMessageReceived?.Invoke(update.Message);
                 if (msg.Chat.Type == ChatType.Private) {
-                    
-                    
                     if (logins.Contains(msg.Chat.Username)) {
                         var command = ParseCommand(msg.Text);
 
@@ -114,37 +112,37 @@ namespace ThinkingHome.Plugins.TelegramBot {
 
         #region send message
 
-        public void SendMessage(ChatId chatIdOrLogin, string text)
+        public void SendMessage(long chatId, string text)
         {
-            Try(t => t.SendMessage(chatIdOrLogin, text, cancellationToken: cts.Token));
+            Try(t => t.SendMessage(chatId, text, cancellationToken: cts.Token));
         }
 
-        public void SendPhoto(ChatId chatIdOrLogin, string filename, Stream content)
+        public void SendPhoto(long chatId, string filename, Stream content)
         {
             var file = new InputFileStream(content, filename);
 
-            Try(t => t.SendPhoto(chatIdOrLogin, file, cancellationToken: cts.Token));
+            Try(t => t.SendPhoto(chatId, file, cancellationToken: cts.Token));
         }
 
-        public void SendPhoto(ChatId chatIdOrLogin, Uri url)
+        public void SendPhoto(long chatId, Uri url)
         {
             var file = new InputFileUrl(url);
 
-            Try(t => t.SendPhoto(chatIdOrLogin, file, cancellationToken: cts.Token));
+            Try(t => t.SendPhoto(chatId, file, cancellationToken: cts.Token));
         }
 
-        public void SendFile(ChatId chatIdOrLogin, string filename, Stream content)
+        public void SendFile(long chatId, string filename, Stream content)
         {
             var file = new InputFileStream(content, filename);
 
-            Try(t => t.SendDocument(chatIdOrLogin, file, cancellationToken: cts.Token));
+            Try(t => t.SendDocument(chatId, file, cancellationToken: cts.Token));
         }
 
-        public void SendFile(ChatId chatIdOrLogin, Uri url)
+        public void SendFile(long chatId, Uri url)
         {
             var file = new InputFileUrl(url);
 
-            Try(t => t.SendDocument(chatIdOrLogin, file, cancellationToken: cts.Token));
+            Try(t => t.SendDocument(chatId, file, cancellationToken: cts.Token));
         }
 
         private void Try(Func<TelegramBotClient, Task> fn)
