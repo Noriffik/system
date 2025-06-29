@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ThinkingHome.Core.Plugins\ThinkingHome.Core.Plugins.csproj" />
+      <ProjectReference Include="..\ThinkingHome.Plugins.WebServer\ThinkingHome.Plugins.WebServer.csproj" />
     </ItemGroup>
 
 </Project>

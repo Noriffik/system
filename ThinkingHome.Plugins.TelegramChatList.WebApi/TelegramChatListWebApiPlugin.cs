@@ -1,19 +1,21 @@
 ﻿using Microsoft.Extensions.Logging;
 using ThinkingHome.Core.Plugins;
+using ThinkingHome.Plugins.WebServer;
+using ThinkingHome.Plugins.WebServer.Attributes;
+using ThinkingHome.Plugins.WebServer.Handlers;
 
 namespace ThinkingHome.Plugins.TelegramChatList.WebApi;
 
 public class TelegramChatListWebApiPlugin() : PluginBase {
-    public override void InitPlugin()
+    [ConfigureWebServer]
+    public void RegisterHttpHandlers(WebServerConfigurationBuilder config)
     {
+        config.RegisterDynamicResource("/api/telegram-chat-list/web-api/list", GetChatList);
     }
-
-    public override void StartPlugin()
+    
+    private HttpHandlerResult GetChatList(HttpRequestParams request)
     {
-        Logger.LogInformation("юхуу плагин апишки чат листа работаееееет ееееееее");
-    }
-
-    public override void StopPlugin()
-    {
+        var response = "тттттт муму";
+        return HttpHandlerResult.Json(response);
     }
 }
