@@ -52,6 +52,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThinkingHome.Plugins.WebUi"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThinkingHome.Plugins.TelegramChatList", "ThinkingHome.Plugins.TelegramChatList\ThinkingHome.Plugins.TelegramChatList.csproj", "{0599B53C-C02C-4B37-8A08-76A7B810E06D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThinkingHome.Plugins.TelegramChatList.WebApi", "ThinkingHome.Plugins.TelegramChatList.WebApi\ThinkingHome.Plugins.TelegramChatList.WebApi.csproj", "{662B40D6-236E-4E5B-A1E9-51099C5DA6B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -162,6 +164,18 @@ Global
 		{0599B53C-C02C-4B37-8A08-76A7B810E06D}.Release|x64.Build.0 = Release|Any CPU
 		{0599B53C-C02C-4B37-8A08-76A7B810E06D}.Release|x86.ActiveCfg = Release|Any CPU
 		{0599B53C-C02C-4B37-8A08-76A7B810E06D}.Release|x86.Build.0 = Release|Any CPU
+		{662B40D6-236E-4E5B-A1E9-51099C5DA6B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{662B40D6-236E-4E5B-A1E9-51099C5DA6B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{662B40D6-236E-4E5B-A1E9-51099C5DA6B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{662B40D6-236E-4E5B-A1E9-51099C5DA6B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{662B40D6-236E-4E5B-A1E9-51099C5DA6B9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{662B40D6-236E-4E5B-A1E9-51099C5DA6B9}.Debug|x64.Build.0 = Debug|Any CPU
+		{662B40D6-236E-4E5B-A1E9-51099C5DA6B9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{662B40D6-236E-4E5B-A1E9-51099C5DA6B9}.Debug|x86.Build.0 = Debug|Any CPU
+		{662B40D6-236E-4E5B-A1E9-51099C5DA6B9}.Release|x64.ActiveCfg = Release|Any CPU
+		{662B40D6-236E-4E5B-A1E9-51099C5DA6B9}.Release|x64.Build.0 = Release|Any CPU
+		{662B40D6-236E-4E5B-A1E9-51099C5DA6B9}.Release|x86.ActiveCfg = Release|Any CPU
+		{662B40D6-236E-4E5B-A1E9-51099C5DA6B9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -184,6 +198,7 @@ Global
 		{960A9C44-3D0F-42F4-8F81-F89588EAC9E0} = {5DF04DCB-BC26-42FA-B7D6-CFC24963F1A8}
 		{003AE996-5F8D-414E-A084-CB93B91D10B1} = {5DF04DCB-BC26-42FA-B7D6-CFC24963F1A8}
 		{0599B53C-C02C-4B37-8A08-76A7B810E06D} = {5DF04DCB-BC26-42FA-B7D6-CFC24963F1A8}
+		{662B40D6-236E-4E5B-A1E9-51099C5DA6B9} = {5DF04DCB-BC26-42FA-B7D6-CFC24963F1A8}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
