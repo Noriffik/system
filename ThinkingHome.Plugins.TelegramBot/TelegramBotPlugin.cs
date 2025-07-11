@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,9 +15,10 @@ using ThinkingHome.Core.Plugins.Utils;
 
 namespace ThinkingHome.Plugins.TelegramBot {
     public class TelegramBotPlugin : PluginBase, IUpdateHandler {
+        public event Action<Message> OnMessageReceived;
 
         private HashSet<string> logins;
-        
+
         private static readonly Regex CommandRegex = new Regex("^\\s*/([a-z0-9-_]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         private ObjectSetRegistry<TelegramMessageHandlerDelegate> handlers;
@@ -73,7 +73,7 @@ namespace ThinkingHome.Plugins.TelegramBot {
         public Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             if (update.Message is { } msg) {
-
+                OnMessageReceived?.Invoke(update.Message);
                 if (msg.Chat.Type == ChatType.Private) {
                     if (logins.Contains(msg.Chat.Username)) {
                         var command = ParseCommand(msg.Text);
@@ -87,7 +87,7 @@ namespace ThinkingHome.Plugins.TelegramBot {
                         _ = SafeInvokeAsync(handlers[TelegramMessageHandlerAttribute.ALL_COMMANDS], fn => fn(command, msg));
                     }
                     else {
-                        Logger.LogInformation("Received message from unknown user with username {0}", msg.Chat.Username);
+                        Logger.LogInformation("Received message from unknown user with username {Username} ({ChatId})", msg.Chat.Username, msg.Chat.Id);
                     }
                 }
             }

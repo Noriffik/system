@@ -1,0 +1,28 @@
+using System.Data;
+using ThinkingHome.Migrator.Framework;
+using ThinkingHome.Migrator.Framework.Extensions;
+
+namespace ThinkingHome.Plugins.TelegramChatList.Model.Migrations;
+
+[Migration(1)]
+public class Migration01 : Migration {
+    private const int MAX_LOGIN_LENGTH = 32;
+    public override void Apply()
+    {
+        Database.AddTable("TelegramChatList_Chat", 
+            new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
+            new Column("Login", DbType.String.WithSize(MAX_LOGIN_LENGTH), ColumnProperty.Null),
+            new Column("ChatId", DbType.Int64, ColumnProperty.NotNull),
+            new Column("Date", DbType.DateTime, ColumnProperty.NotNull),
+            new Column("FirstName", DbType.String.WithSize(int.MaxValue), ColumnProperty.Null),
+            new Column("LastName", DbType.String.WithSize(int.MaxValue), ColumnProperty.Null));
+        
+        Database.AddUniqueConstraint("UK_TelegramChatList_Chat_ChatId", "TelegramChatList_Chat", "ChatId");
+        
+    }
+    
+    public override void Revert()
+    {
+        Database.RemoveTable("TelegramChatList_Chat");
+    }
+}
