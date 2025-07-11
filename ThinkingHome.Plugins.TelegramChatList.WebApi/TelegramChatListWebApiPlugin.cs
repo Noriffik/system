@@ -14,11 +14,12 @@ public class TelegramChatListWebApiPlugin(DatabasePlugin database) : PluginBase 
     {
         config.RegisterDynamicResource("/api/telegram-chat-list/web-api/list", GetChatList);
     }
-    
+
     private HttpHandlerResult GetChatList(HttpRequestParams request)
     {
         using var db = database.OpenSession();
-        var list = db.Set<Chat>().ToArray();
+        var list = db.Set<Chat>().Select(x => new
+            { id = x.Id, login = x.Login, chatId = x.ChatId, firstName = x.FirstName, lastName = x.LastName, date = x.Date }).ToArray();
         return HttpHandlerResult.Json(list);
     }
 }
