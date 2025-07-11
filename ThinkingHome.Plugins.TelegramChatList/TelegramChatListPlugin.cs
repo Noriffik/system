@@ -39,9 +39,4 @@ public class TelegramChatListPlugin(TelegramBotPlugin telegramBot, DatabasePlugi
 
         db.SaveChanges();
     }
-
-    public override void StartPlugin()
-    {
-        telegramBot.SendMessage(353206782, "чатлисту весело он работает !");
-    }
 }
