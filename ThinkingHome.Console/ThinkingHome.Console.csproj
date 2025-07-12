@@ -21,6 +21,7 @@
         <ProjectReference Include="..\ThinkingHome.Core.Plugins\ThinkingHome.Core.Plugins.csproj" />
         <ProjectReference Include="..\ThinkingHome.Plugins.Database\ThinkingHome.Plugins.Database.csproj" />
         <ProjectReference Include="..\ThinkingHome.Plugins.Mail\ThinkingHome.Plugins.Mail.csproj" />
+        <ProjectReference Include="..\ThinkingHome.Plugins.TelegramChatList.WebApi\ThinkingHome.Plugins.TelegramChatList.WebApi.csproj" />
         <ProjectReference Include="..\ThinkingHome.Plugins.TelegramChatList\ThinkingHome.Plugins.TelegramChatList.csproj" />
         <ProjectReference Include="..\ThinkingHome.Plugins.Tmp\ThinkingHome.Plugins.Tmp.csproj" />
         <ProjectReference Include="..\ThinkingHome.Plugins.Mqtt\ThinkingHome.Plugins.Mqtt.csproj" />
