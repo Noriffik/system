@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+    <Import Project="../Package.xml" />
     <PropertyGroup>
+        <Description>ThinkingHome plugin which provide TelegramChatList web API.</Description>
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
