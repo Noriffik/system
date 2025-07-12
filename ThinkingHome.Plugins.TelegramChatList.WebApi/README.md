@@ -4,7 +4,8 @@
 
 # TelegramChatListWebApiPlugin
 
-Предоставляет HTTP API для просмотра списка сохраненных чатов из плагина [TelegramChatList](../ThinkingHome.Plugins.TelegramChatList).
+Предоставляет HTTP API для просмотра списка сохраненных чатов из
+плагина [TelegramChatList](../ThinkingHome.Plugins.TelegramChatList).
 
 ## HTTP API
 

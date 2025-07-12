@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using ThinkingHome.Core.Plugins;
+﻿using ThinkingHome.Core.Plugins;
 using ThinkingHome.Plugins.Database;
 using ThinkingHome.Plugins.TelegramChatList.Model;
 using ThinkingHome.Plugins.WebServer;
