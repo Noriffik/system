@@ -1,13 +1,11 @@
 ﻿using System;
 
-namespace ThinkingHome.Plugins.Scripts.Model
-{
-    public class UserScript
-    {
-        public Guid Id { get; set; }
+namespace ThinkingHome.Plugins.Scripts.Model;
 
-        public string Name { get; set; }
+public class UserScript {
+    public Guid Id { get; init; }
 
-        public string Body { get; set; }
-    }
+    public string Name { get; set; }
+
+    public string Body { get; set; }
 }

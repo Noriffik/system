@@ -7,11 +7,6 @@ public enum StatusCode {
     Internal = 500,
 }
 
-public class HttpHandlerException : Exception {
-    public StatusCode StatusCode { get; }
-
-    public HttpHandlerException(StatusCode statusCode, string message = null) : base(message)
-    {
-        StatusCode = statusCode;
-    }
+public class HttpHandlerException(StatusCode statusCode, string message = null) : Exception(message) {
+    public StatusCode StatusCode { get; } = statusCode;
 }

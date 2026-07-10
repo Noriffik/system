@@ -1,8 +1,6 @@
-namespace ThinkingHome.Core.Plugins
-{
-    public enum PluginsOrder
-    {
-        Direct,
-        Inverse
-    }
+namespace ThinkingHome.Core.Plugins;
+
+public enum PluginsOrder {
+    Direct,
+    Inverse
 }

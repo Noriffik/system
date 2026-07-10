@@ -7,96 +7,93 @@ using ThinkingHome.Core.Plugins;
 using ThinkingHome.Plugins.Scripts.Attributes;
 using Buffer = ThinkingHome.Plugins.Scripts.Buffer;
 
-namespace ThinkingHome.Plugins.Mail
-{
-    public class MailPlugin : PluginBase
-    {
-        #region options
+namespace ThinkingHome.Plugins.Mail;
 
-        private string FromName => Configuration.GetValue<string>("fromName");
-        private string FromMail => Configuration.GetValue<string>("fromMail");
-        private string SmtpHost => Configuration.GetValue<string>("smtpHost");
-        private int SmtpPort => Configuration.GetValue<int>("smtpPort");
-        private bool UseSSL => Configuration.GetValue<bool>("useSSL");
-        private bool DisableCertificateValidation => Configuration.GetValue<bool>("disableCertificateValidation");
+public class MailPlugin : PluginBase {
+	#region options
 
-        private string AuthLogin => Configuration.GetSection("auth").GetValue<string>("login");
-        private string AuthPassword => Configuration.GetSection("auth").GetValue<string>("password");
-        private bool UseAuth => !string.IsNullOrEmpty(AuthLogin) && !string.IsNullOrEmpty(AuthPassword);
+	private string FromName => Configuration.GetValue<string>("fromName");
+	private string FromMail => Configuration.GetValue<string>("fromMail");
+	private string SmtpHost => Configuration.GetValue<string>("smtpHost");
+	private int SmtpPort => Configuration.GetValue<int>("smtpPort");
+	private bool UseSsl => Configuration.GetValue<bool>("useSSL");
+	private bool DisableCertificateValidation => Configuration.GetValue<bool>("disableCertificateValidation");
 
-        #endregion
+	private string AuthLogin => Configuration.GetSection("auth").GetValue<string>("login");
+	private string AuthPassword => Configuration.GetSection("auth").GetValue<string>("password");
+	private bool UseAuth => !string.IsNullOrEmpty(AuthLogin) && !string.IsNullOrEmpty(AuthPassword);
 
-        public override void InitPlugin()
-        {
-	        Logger.LogInformation("Use mail account {FromMail} with {SmtpHost} SMTP host", FromMail, SmtpHost);
-        }
+	#endregion
 
-        #region private
+	public override void InitPlugin()
+	{
+		Logger.LogInformation("Use mail account {FromMail} with {SmtpHost} SMTP host", FromMail, SmtpHost);
+	}
 
-        private void SendMailInternal(MimeMessage message)
-        {
-	        try {
-		        using var client = new SmtpClient();
+	#region private
 
-		        if (DisableCertificateValidation) {
-			        client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-		        }
+	private void SendMailInternal(MimeMessage message)
+	{
+		try {
+			using var client = new SmtpClient();
 
-		        client.Connect(SmtpHost, SmtpPort, UseSSL);
-		        client.AuthenticationMechanisms.Remove("XOAUTH2"); // Must be removed for Gmail SMTP
+			if (DisableCertificateValidation) {
+				client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+			}
 
-		        if (UseAuth) {
-			        client.Authenticate(AuthLogin, AuthPassword);
-		        }
+			client.Connect(SmtpHost, SmtpPort, UseSsl);
+			client.AuthenticationMechanisms.Remove("XOAUTH2"); // Must be removed for Gmail SMTP
 
-		        client.Send(message);
-		        client.Disconnect(true);
-	        }
-	        catch (Exception e) {
-		        Logger.LogError(e, "Error when trying to send mail");
-	        }
-        }
+			if (UseAuth) {
+				client.Authenticate(AuthLogin, AuthPassword);
+			}
 
-        private MimeMessage CreateMessage(string email, string subject)
-        {
-
-            var message = new MimeMessage();
-
-            message.From.Add(new MailboxAddress(FromName, FromMail));
-            message.To.Add(new MailboxAddress(string.Empty, email));
-            message.Subject = subject;
-
-            return message;
-        }
-
-        #endregion
-
-        [ScriptCommand("sendMail")]
-        public void SendMail(string email, string subject, string body)
-        {
-			var message = CreateMessage(email, subject);
-
-			message.Body = new TextPart("plain") { Text = body };
-
-			SendMailInternal(message);
-        }
-
-		[ScriptCommand("sendMailWithAttachment")]
-		public void SendMail(string email, string subject, string body, string fileName, Buffer fileContent)
-		{
-            SendMail(email, subject, body, fileName, fileContent.GetBytes());
+			client.Send(message);
+			client.Disconnect(true);
 		}
-
-		public void SendMail(string email, string subject, string body, string fileName, byte[] fileContent)
-		{
-			var message = CreateMessage(email, subject);
-
-			var builder = new BodyBuilder { TextBody = body };
-			builder.Attachments.Add(fileName, fileContent);
-
-			message.Body = builder.ToMessageBody();
-
-			SendMailInternal(message);
+		catch (Exception e) {
+			Logger.LogError(e, "Error when trying to send mail");
 		}
+	}
+
+	private MimeMessage CreateMessage(string email, string subject)
+	{
+		var message = new MimeMessage();
+
+		message.From.Add(new MailboxAddress(FromName, FromMail));
+		message.To.Add(new MailboxAddress(string.Empty, email));
+		message.Subject = subject;
+
+		return message;
+	}
+
+	#endregion
+
+	[ScriptCommand("sendMail")]
+	public void SendMail(string email, string subject, string body)
+	{
+		var message = CreateMessage(email, subject);
+
+		message.Body = new TextPart("plain") { Text = body };
+
+		SendMailInternal(message);
+	}
+
+	[ScriptCommand("sendMailWithAttachment")]
+	public void SendMail(string email, string subject, string body, string fileName, Buffer fileContent)
+	{
+		SendMail(email, subject, body, fileName, fileContent.GetBytes());
+	}
+
+	private void SendMail(string email, string subject, string body, string fileName, byte[] fileContent)
+	{
+		var message = CreateMessage(email, subject);
+
+		var builder = new BodyBuilder { TextBody = body };
+		builder.Attachments.Add(fileName, fileContent);
+
+		message.Body = builder.ToMessageBody();
+
+		SendMailInternal(message);
 	}
 }

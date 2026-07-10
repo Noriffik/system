@@ -1,9 +1,6 @@
 ﻿using System;
 
-namespace ThinkingHome.Plugins.NooLite
-{
-    [AttributeUsage(AttributeTargets.Method)]
-    public class NooLiteMicroclimateDataHandlerAttribute : Attribute
-    {
-    }
-}
+namespace ThinkingHome.Plugins.NooLite;
+
+[AttributeUsage(AttributeTargets.Method)]
+public class NooLiteMicroclimateDataHandlerAttribute : Attribute { }

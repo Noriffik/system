@@ -1,15 +1,8 @@
 ﻿using System;
 
-namespace ThinkingHome.Plugins.Scripts.Attributes
-{
-    [AttributeUsage(AttributeTargets.Method)]
-    public class ScriptCommandAttribute : Attribute
-    {
-        public string Alias { get; }
+namespace ThinkingHome.Plugins.Scripts.Attributes;
 
-        public ScriptCommandAttribute(string alias)
-        {
-            Alias = alias;
-        }
-    }
+[AttributeUsage(AttributeTargets.Method)]
+public class ScriptCommandAttribute(string alias) : Attribute {
+    public string Alias { get; } = alias;
 }

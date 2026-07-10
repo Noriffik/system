@@ -12,10 +12,10 @@ using ThinkingHome.Plugins.WebUi.Attributes;
 namespace ThinkingHome.Plugins.WebUi;
 
 public class WebUiPlugin : PluginBase {
-    const string HTML_RES_PATH = "ThinkingHome.Plugins.WebUi.Resources.static.index.html";
-    const string MIME_HTML = "text/html";
-    const string MIME_JS = "application/javascript";
-    const string MIME_CSS = "text/css";
+    private const string HTML_RES_PATH = "ThinkingHome.Plugins.WebUi.Resources.static.index.html";
+    private const string MIME_HTML = "text/html";
+    private const string MIME_JS = "application/javascript";
+    private const string MIME_CSS = "text/css";
 
     private readonly ObjectRegistry<WebUiPageDefinition> pages = new();
     private readonly ObjectRegistry<IStringLocalizer> localizers = new();
@@ -63,7 +63,7 @@ public class WebUiPlugin : PluginBase {
             .SelectMany(p => p.FindMethods<ConfigureWebUiAttribute, ConfigureWebUiDelegate>())
             .ToArray();
 
-        foreach (var (meta, fn, plugin) in inits) {
+        foreach (var (_, fn, plugin) in inits) {
             var source = plugin.GetType();
             var localizerId = source.ToString().GetHashString();
 
@@ -96,7 +96,7 @@ public class WebUiPlugin : PluginBase {
     {
         var lang = CultureInfo.CurrentCulture.Name;
 
-        var pages = this.pages.Data.Values.ToDictionary(
+        var pagesDictionary = pages.Data.Values.ToDictionary(
             p => p.PathDocument,
             p => new {
                 js = p.PathJavaScript,
@@ -112,6 +112,6 @@ public class WebUiPlugin : PluginBase {
 
         var config = new { lang, messageHub };
 
-        return HttpHandlerResult.Json(new { pages, config });
+        return HttpHandlerResult.Json(new { pages = pagesDictionary, config });
     }
 }

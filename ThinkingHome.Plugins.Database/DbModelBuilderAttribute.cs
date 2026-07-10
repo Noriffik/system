@@ -1,9 +1,5 @@
 ﻿using System;
 
-namespace ThinkingHome.Plugins.Database
-{
-    public class DbModelBuilderAttribute : Attribute
-    {
+namespace ThinkingHome.Plugins.Database;
 
-    }
-}
+public class DbModelBuilderAttribute : Attribute { }

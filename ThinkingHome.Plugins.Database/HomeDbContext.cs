@@ -1,24 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace ThinkingHome.Plugins.Database
-{
-    public class HomeDbContext : DbContext
+namespace ThinkingHome.Plugins.Database;
+
+public class HomeDbContext(DbModelBuilderDelegate[] inits, DbContextOptions options) : DbContext(options) {
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        private readonly DbModelBuilderDelegate[] inits;
+        if (inits == null) return;
 
-        public HomeDbContext(DbModelBuilderDelegate[] inits, DbContextOptions options) : base(options)
-        {
-            this.inits = inits;
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            if (inits == null) return;
-
-            foreach (var action in inits)
-            {
-                action(modelBuilder);
-            }
+        foreach (var action in inits) {
+            action(modelBuilder);
         }
     }
 }

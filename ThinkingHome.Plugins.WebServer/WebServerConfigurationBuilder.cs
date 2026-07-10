@@ -6,18 +6,11 @@ using ThinkingHome.Plugins.WebServer.Messages;
 
 namespace ThinkingHome.Plugins.WebServer;
 
-public class WebServerConfigurationBuilder : BaseConfigurationBuilder<BaseHandler>
-{
-    private readonly ObjectSetRegistry<HubMessageHandlerDelegate> msgHandlers;
-
-    public WebServerConfigurationBuilder(
-        Type source,
-        ObjectRegistry<BaseHandler> handlers,
-        ObjectSetRegistry<HubMessageHandlerDelegate> msgHandlers) : base(source, handlers)
-    {
-        this.msgHandlers = msgHandlers;
-    }
-
+public class WebServerConfigurationBuilder(
+    Type source,
+    ObjectRegistry<BaseHandler> handlers,
+    ObjectSetRegistry<HubMessageHandlerDelegate> msgHandlers)
+    : BaseConfigurationBuilder<BaseHandler>(source, handlers) {
     /// <summary>
     /// Зарегистрировать статический HTTP ресурс (кэшируется)
     /// </summary>

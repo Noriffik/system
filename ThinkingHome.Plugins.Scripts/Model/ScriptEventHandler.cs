@@ -1,14 +1,12 @@
 ﻿using System;
 
-namespace ThinkingHome.Plugins.Scripts.Model
-{
-    public class ScriptEventHandler
-    {
-        public Guid Id { get; set; }
+namespace ThinkingHome.Plugins.Scripts.Model;
 
-        public string EventAlias { get; set; }
+public class ScriptEventHandler {
+    public Guid Id { get; init; }
 
-        public Guid UserScriptId { get; set; }
-        public UserScript UserScript { get; set; }
-    }
+    public string EventAlias { get; init; }
+
+    public Guid UserScriptId { get; init; }
+    public UserScript UserScript { get; init; }
 }

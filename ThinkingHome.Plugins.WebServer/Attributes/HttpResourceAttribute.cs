@@ -1,14 +1,7 @@
 ﻿using System;
 
-namespace ThinkingHome.Plugins.WebServer.Attributes
-{
-    public abstract class HttpResourceAttribute : Attribute
-    {
-        protected HttpResourceAttribute(string url)
-        {
-            Url = url;
-        }
+namespace ThinkingHome.Plugins.WebServer.Attributes;
 
-        public string Url { get; }
-    }
+public abstract class HttpResourceAttribute(string url) : Attribute {
+    public string Url { get; } = url;
 }

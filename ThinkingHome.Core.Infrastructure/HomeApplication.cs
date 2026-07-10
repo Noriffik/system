@@ -3,134 +3,121 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using ThinkingHome.Core.Plugins;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace ThinkingHome.Core.Infrastructure
-{
-    public class HomeApplication
+namespace ThinkingHome.Core.Infrastructure;
+
+public class HomeApplication {
+    private IServiceProvider services;
+
+    private ILogger logger;
+
+    private IServiceContext context;
+
+    public void StartServices(HomeConfiguration config)
     {
-        private IServiceProvider services;
+        services = ConfigureServices(config);
 
-        private ILogger logger;
+        var loggerFactory = services
+            .GetRequiredService<ILoggerFactory>()
+            .AddSerilog(config.LoggerConfiguration.CreateLogger(), true);
 
-        private IServiceContext context;
+        logger = loggerFactory.CreateLogger<HomeApplication>();
+        context = services.GetRequiredService<IServiceContext>();
 
-        public void StartServices(HomeConfiguration config)
-        {
-            services = ConfigureServices(config);
+        InitLanguage(config);
 
-            var loggerFactory = services
-                .GetRequiredService<ILoggerFactory>()
-                .AddSerilog(config.LoggerConfiguration.CreateLogger(), true);
-
-            logger = loggerFactory.CreateLogger<HomeApplication>();
-            context = services.GetRequiredService<IServiceContext>();
-
-            InitLanguage(config);
-
-            try
-            {
-                // init plugins
-                foreach (var plugin in context.GetAllPlugins())
-                {
-                    logger.LogInformation("init plugin: {Plugin}", plugin.GetType().FullName);
-                    plugin.InitPlugin();
-                }
-
-                // start plugins
-                foreach (var plugin in context.GetAllPlugins())
-                {
-                    logger.LogInformation("start plugin {Plugin}", plugin.GetType().FullName);
-                    plugin.StartPlugin();
-                }
-
-                logger.LogInformation("all plugins are started");
+        try {
+            // init plugins
+            foreach (var plugin in context.GetAllPlugins()) {
+                logger.LogInformation("init plugin: {Plugin}", plugin.GetType().FullName);
+                plugin.InitPlugin();
             }
-            catch (ReflectionTypeLoadException ex)
-            {
-                logger.LogError(0, ex, "error on plugins initialization");
-                foreach (var loaderException in ex.LoaderExceptions)
-                {
-                    logger.LogError(0, loaderException, loaderException?.Message);
-                }
-                throw;
+
+            // start plugins
+            foreach (var plugin in context.GetAllPlugins()) {
+                logger.LogInformation("start plugin {Plugin}", plugin.GetType().FullName);
+                plugin.StartPlugin();
             }
-            catch (Exception ex)
-            {
-                logger.LogError(0, ex, "error on start plugins");
-                throw;
-            }
+
+            logger.LogInformation("all plugins are started");
         }
-
-        public void StopServices()
-        {
-            foreach (var plugin in context.GetAllPlugins(PluginsOrder.Inverse))
-            {
-                try
-                {
-                    logger.LogInformation("stop plugin {Plugin}", plugin.GetType().FullName);
-                    plugin.StopPlugin();
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(0, ex, "error on stop plugins");
-                }
+        catch (ReflectionTypeLoadException ex) {
+            logger.LogError(0, ex, "error on plugins initialization");
+            foreach (var loaderException in ex.LoaderExceptions) {
+                logger.LogError(0, loaderException, loaderException?.Message);
             }
 
-            logger.LogInformation("all plugins are stopped");
+            throw;
         }
-
-        #region private
-
-        private void InitLanguage(HomeConfiguration config)
-        {
-            var culture = config.GetCulture();
-
-            logger.LogInformation("init culture: {Culture}", culture);
-
-            Thread.CurrentThread.CurrentCulture =
-                Thread.CurrentThread.CurrentUICulture =
-                    CultureInfo.DefaultThreadCurrentCulture =
-                        CultureInfo.DefaultThreadCurrentUICulture = culture;
-
+        catch (Exception ex) {
+            logger.LogError(0, ex, "error on start plugins");
+            throw;
         }
-
-        private static IServiceProvider ConfigureServices(HomeConfiguration config)
-        {
-            var asms = config.GetDependencies().ToArray();
-
-            var serviceCollection = new ServiceCollection();
-
-            serviceCollection.AddOptions();
-            serviceCollection.AddSingleton<ILoggerFactory, LoggerFactory>();
-            serviceCollection.AddSingleton<IServiceContext, ServiceContext>();
-            serviceCollection.AddSingleton<IConfigurationSection>(config.Configuration.GetSection("plugins"));
-            serviceCollection.AddLocalization(opts => opts.ResourcesPath = "Lang");
-
-            foreach (var asm in asms)
-            {
-                AddAssemblyPlugins(serviceCollection, asm);
-            }
-
-            return serviceCollection.BuildServiceProvider();
-        }
-
-        private static void AddAssemblyPlugins(ServiceCollection services, Assembly asm)
-        {
-            var baseType = typeof(PluginBase);
-
-            foreach (var pluginType in asm.GetExportedTypes().Where(type => baseType.GetTypeInfo().IsAssignableFrom(type)))
-            {
-                services.AddSingleton(pluginType);
-                services.AddSingleton(baseType, x => x.GetRequiredService(pluginType));
-            }
-        }
-
-        #endregion
     }
+
+    public void StopServices()
+    {
+        foreach (var plugin in context.GetAllPlugins(PluginsOrder.Inverse)) {
+            try {
+                logger.LogInformation("stop plugin {Plugin}", plugin.GetType().FullName);
+                plugin.StopPlugin();
+            }
+            catch (Exception ex) {
+                logger.LogError(0, ex, "error on stop plugins");
+            }
+        }
+
+        logger.LogInformation("all plugins are stopped");
+    }
+
+    #region private
+
+    private void InitLanguage(HomeConfiguration config)
+    {
+        var culture = config.GetCulture();
+
+        logger.LogInformation("init culture: {Culture}", culture);
+
+        Thread.CurrentThread.CurrentCulture =
+            Thread.CurrentThread.CurrentUICulture =
+                CultureInfo.DefaultThreadCurrentCulture =
+                    CultureInfo.DefaultThreadCurrentUICulture = culture;
+
+    }
+
+    private static IServiceProvider ConfigureServices(HomeConfiguration config)
+    {
+        var asms = config.GetDependencies().ToArray();
+
+        var serviceCollection = new ServiceCollection();
+
+        serviceCollection.AddOptions();
+        serviceCollection.AddSingleton<ILoggerFactory, LoggerFactory>();
+        serviceCollection.AddSingleton<IServiceContext, ServiceContext>();
+        serviceCollection.AddSingleton(config.Configuration.GetSection("plugins"));
+        serviceCollection.AddLocalization(opts => opts.ResourcesPath = "Lang");
+
+        foreach (var asm in asms) {
+            AddAssemblyPlugins(serviceCollection, asm);
+        }
+
+        return serviceCollection.BuildServiceProvider();
+    }
+
+    private static void AddAssemblyPlugins(ServiceCollection services, Assembly asm)
+    {
+        var baseType = typeof(PluginBase);
+
+        foreach (var pluginType in asm.GetExportedTypes().Where(type => baseType.GetTypeInfo().IsAssignableFrom(type))) {
+            services.AddSingleton(pluginType);
+            services.AddSingleton(baseType, x => x.GetRequiredService(pluginType));
+        }
+    }
+
+    #endregion
 }

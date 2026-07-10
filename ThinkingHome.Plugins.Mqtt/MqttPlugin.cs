@@ -187,15 +187,16 @@ public class MqttPlugin(ScriptsPlugin scripts) : PluginBase {
     {
         Logger.LogInformation("MQTT client is connected");
 
-        foreach (var sub in listeners.Data.Values) {
-            Logger.LogInformation("Subscribe MQTT client to {Topic} topic filter", sub.TopicFilter);
-            var opts = new MqttClientSubscribeOptionsBuilder()
-                .WithTopicFilter(sub.TopicFilter)
-                .WithSubscriptionIdentifier(sub.TopicFilterId)
-                .Build();
+        if (listeners.Data.Values != null)
+            foreach (var sub in listeners.Data.Values) {
+                Logger.LogInformation("Subscribe MQTT client to {Topic} topic filter", sub.TopicFilter);
+                var opts = new MqttClientSubscribeOptionsBuilder()
+                    .WithTopicFilter(sub.TopicFilter)
+                    .WithSubscriptionIdentifier(sub.TopicFilterId)
+                    .Build();
 
-            await client.SubscribeAsync(opts);
-        }
+                await client.SubscribeAsync(opts);
+            }
 
         Logger.LogInformation("MQTT client is subscribed");
     }
