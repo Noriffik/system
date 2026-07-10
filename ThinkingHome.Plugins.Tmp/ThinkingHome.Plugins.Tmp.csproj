@@ -2,7 +2,7 @@
     <Import Project="../Package.xml"/>
     <PropertyGroup>
         <Description>Tmp plugin.</Description>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
     </PropertyGroup>
     <Target Name="NpmInstall" Inputs="package.json" Outputs="node_modules/.install-stamp">
         <PropertyGroup>

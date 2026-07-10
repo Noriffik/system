@@ -2,7 +2,7 @@
     <Import Project="../Package.xml" />
     <PropertyGroup>
         <Description>ThinkingHome plugin which provide the ability to call other plugins methods by HTTP requests.</Description>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
